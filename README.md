@@ -8,7 +8,7 @@
   * Sign up for a free DreamFactory hosted account at https://www.dreamfactory.com/signup
   * Load the file name and path info into a sqlite (db) database
   * Create a V8JS scripting service called getmeme.
-  ** Put the contents of getmeme.js in it.
+  * Put the contents of getmeme.js in it.
   * Add an role for accessing your script and your db service
   * Add an App (API Key) with its default role set to the previously created role
 
