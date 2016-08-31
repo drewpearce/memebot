@@ -1,4 +1,5 @@
 # memebot
+## Version 0.1
   This code uses DreamFactory, AWS S3 file service, and Slack to create you own image search and response service. To get started you will need to set up accounts at each of the serivces.
 
 ## AWS S3
