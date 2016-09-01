@@ -9,21 +9,23 @@
 ## DreamFactory
   * Install DreamFactory using a Bitnami package, https://bitnami.com/stack/dreamfactory, or install from source: http://wiki.dreamfactory.com/DreamFactory/Installation
   * You will need to comment out some code to make this work with slack.
-  ** Locate the file in the installation directory app/Http/Middleware/AuthCheck.php
-  ** Locate and comment out these lines (lines 59-61 in DF 2.3.0)
-    /*if (empty($token)) {
-      $token = $request->input('token');
-    }*/
+   * Locate the file in the installation directory app/Http/Middleware/AuthCheck.php
+   * Locate and comment out these lines (lines 59-61 in DF 2.3.0)
+ ```php
+if (empty($token)) {
+    $token = $request->input('token');
+}
+```
   * Add your S3 service to DreamFactory. In the JS code, the name of the service is memebot. You can call it anything you like, but be sure to update the code.
   * Create a V8JS scripting service called getmeme.
-  ** Put the contents of getmeme.js in it.
+   * Put the contents of getmeme.js in it.
   * Add a Role for accessing your script and your db service
-  ** You'll want to allow GET access via API on your script service (getmeme.)
-  ** You'll want to allow GET access via Script on your S3 service (memebot,) all components.
+   * You'll want to allow GET access via API on your script service (getmeme.)
+   * You'll want to allow GET access via Script on your S3 service (memebot,) all components.
   * Add an App (API Key) with its default role set to the previously created role
 
 ## Slack
   * Create a slack account
   * Add a Slash command (for example /meme)
-  ** Add your own descriptions as desired
+   * Add your own descriptions as desired
   * Have your slash command call http[s]://{your dreamfactory url}/api/v2/getmeme?api_key={your api} using GET
