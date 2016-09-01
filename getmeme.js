@@ -36,7 +36,7 @@ if (filesList.content.resource) {
         termCount = termCount + 1;
     });
     matchLength1 = matchList.length;
-    if (matchLength1 !== 0) {
+    if (matchList[matchLength1-1].length !== 0) {
         if (matchList[matchLength1-1].length > 1) {
             var itemNo = Math.floor((Math.random() * matchList[matchLength1-1].length) + 0);
         } else {
@@ -45,10 +45,10 @@ if (filesList.content.resource) {
         response.response_type = 'in_channel';
         response.text = s3BaseUrl + matchList[matchLength1-1][itemNo];
     } else {
-        response.text = 'no matches';
+        response.text = 'No files matched your query.';
     }
 } else {
-    response.text = 'no files';
+    response.text = 'No files were found in your storage service.';
 }
 
 return response;
