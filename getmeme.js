@@ -1,8 +1,28 @@
+var lodash = require("lodash.min.js");
 var params = event.request.parameters;
-var apiCall = 'db/_table/memes?filter=name%20LIKE%20%25'+params.text+'%25';
-var search = platform.api.get(apiCall);
-var randItem = Math.floor((Math.random() * search.content.resource.length) + 0);
-return {
-    "response_type": "in_channel",
-    "text": "https://s3.amazonaws.com/memebot/" + search.content.resource[randItem].path
-    };
+var regex = new RegExp(params.text, 'gi');
+var filesList = platform.api.get("memebot?as_list=true&include_folders=false&include_files=true&full_tree=true&zip=false");
+var matchList = [];
+
+if (filesList.content.resource) {
+    lodash._.each(filesList.content.resource, function( entry ) {
+        if (entry.match(regex)) {
+            matchList.push(entry);
+        }
+    });
+    if (matchList.length !== 0) {
+        if (matchList.length > 1) {
+            var itemNo = Math.floor((Math.random() * matchList.length) + 0);
+        } else {
+            var itemNo = 0;
+        }
+        return {
+            "response_type": "in_channel",
+            "text": "https://s3.amazonaws.com/memebot/" + matchList[itemNo]
+        };
+    } else {
+        return 'no matches';
+    }
+} else {
+    return 'no files';
+}
