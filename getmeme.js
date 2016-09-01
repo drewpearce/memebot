@@ -43,7 +43,7 @@ if (filesList.content.resource) {
             var itemNo = 0;
         }
         response.response_type = 'in_channel';
-        response.text = matchList[matchLength1-1][itemNo];
+        response.text = s3BaseUrl + matchList[matchLength1-1][itemNo];
     } else {
         response.text = 'no matches';
     }
