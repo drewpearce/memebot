@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-var lodash = require("lodash.min.js");
-var s3BaseUrl = '' //input your s3 base url here (with trailing slash)
-=======
 //system vars
 var s3BaseUrl = 'https://s3.amazonaws.com/memebot/' //input your s3 base url here (with trailing slash)
 
@@ -9,7 +5,6 @@ var s3BaseUrl = 'https://s3.amazonaws.com/memebot/' //input your s3 base url her
 var lodash = require("lodash.min.js"); //lodash each used for looping
 
 //input vars
->>>>>>> origin/develop
 var params = event.request.parameters;
 var textIn = params.text.split(' ');
 
@@ -47,15 +42,8 @@ if (filesList.content.resource) {
         } else {
             var itemNo = 0;
         }
-<<<<<<< HEAD
-        return {
-            "response_type": "in_channel",
-            "text": s3BaseUrl + matchList[itemNo]
-        };
-=======
         response.response_type = 'in_channel';
         response.text = s3BaseUrl + matchList[matchLength1-1][itemNo];
->>>>>>> origin/develop
     } else {
         response.text = 'No files matched your query.';
     }
