@@ -1,6 +1,17 @@
  Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.0]
+### Added
+- Added ability to search multiple terms
+
+### Changed
+- Improved error handling
+- Builds the response object and then returns it rather than hardcoding the json
+
+### Fixed
+- Fixed bad error handling (returning undefined as a valid url.)
+
 ## [0.2] - 2016-09-01
 ### Added
 - Added Changelog file
