@@ -10,7 +10,15 @@ var params = event.request.parameters;
 var textIn = params.text.split(' ');
 
 //data vars
-var filesList = platform.api.get(storageService + "?as_list=true&include_folders=false&include_files=true&full_tree=true&zip=false"); //gets a list of all files
+var filesListOptions = {};
+filesListOptions.parameters = {};
+filesListOptions.parameters.as_list = true;
+filesListOptions.parameters.include_folders = false;
+filesListOptions.parameters.include_files = true;
+filesListOptions.parameters.full_tree = true;
+filesListOptions.parameters.zip = false;
+
+var filesList = platform.api.get(storageService, null, filesListOptions); //gets a list of all files
 var matchList = [];
 var termCount = 0;
 
