@@ -4,6 +4,7 @@ var storageService = ''; //input the name of your storage service
 var dbService = ''; //input the name of your database service (file index)
 var dbTable = ''; //input the name of your database table
 var dbPath = dbService + '/_table/' + dbTable;
+var allowUpload = false; //change to true to allow uploading via slack.
 
 //libraries
 var lodash = require("lodash.min.js"); //lodash each used for looping
@@ -27,7 +28,7 @@ function searchMemes (terms) {
   var searchOptions = {};
   searchOptions.parameters = {};
   searchOptions.parameters.fields = 'path';
-  if (terms.length === 0) {
+  if (terms.length === 1) {
     searchOptions.parameters.filter = "(path like '%" + terms[0] + "%')";
   } else {
     searchOptions.parameters.filter = '';
@@ -46,15 +47,38 @@ function searchMemes (terms) {
   return searchResults;
 }
 
-var matches = searchMemes(textIn);
+function uploadFile(inputs) {
+  var uploadResponseBuild = {};
+  var filePost = {};
 
-if (matches.content.resource.length < 1) {
-  response.text = 'No files matched your query.';
-} else if (matches.content.resource.length == 1) {
-  response.response_type = 'in_channel';
-  response.text = baseURL + matches.content.resource[0].path;
+  if (allowUpload !== true) {
+    uploadResponseBuild.text = 'File upload is not enabled for this instance.';
+  } else {
+    filePost = platform.api.post(storageService + '?url=' + inputs[1], null);
+
+    if (filePost.status_code == 201) {
+      uploadResponseBuild.text = 'Your file was successfully uploaded. It is now located at ' + baseURL + filePost.content.path;
+    } else {
+      uploadResponseBuild.text = 'File upload unsuccessful.';
+    }
+  }
+
+  return uploadResponseBuild;
+}
+
+if (textIn[0] == 'upload') {
+  response = uploadFile(textIn);
 } else {
-  response = selectMeme(matches.content.resource);
+  var matches = searchMemes(textIn);
+
+  if (matches.content.resource.length < 1) {
+    response.text = 'No files matched your query.';
+  } else if (matches.content.resource.length == 1) {
+    response.response_type = 'in_channel';
+    response.text = baseURL + matches.content.resource[0].path;
+  } else {
+    response = selectMeme(matches.content.resource);
+  }
 }
 
 return response;
