@@ -5,6 +5,8 @@ var dbService = ''; //input the name of your database service (file index)
 var dbTable = ''; //input the name of your database table
 var dbPath = dbService + '/_table/' + dbTable;
 var allowUpload = false; //change to true to allow uploading via slack.
+var uploadMemeWithRenameService = ''; //the name of the service that allows uploading with renaming
+var indexMemesService = ''; //the name of the service that does the indexing.
 
 //libraries
 var lodash = require("lodash.min.js"); //lodash each used for looping
@@ -50,14 +52,30 @@ function searchMemes (terms) {
 function uploadFile(inputs) {
   var uploadResponseBuild = {};
   var filePost = {};
+  var newFilePath;
 
   if (allowUpload !== true) {
     uploadResponseBuild.text = 'File upload is not enabled for this instance.';
   } else {
-    filePost = platform.api.post(storageService + '?url=' + inputs[1], null);
+    if (inputs[2]) {
+      filePost = platform.api.get(uploadMemeWithRenameService + '?url=' + inputs[1] + '&filename=' + inputs[2]);
+      newFilePath = filePost.content.post.content.path;
+      if (filePost.content.success === true) {
+        filePost.status_code = 201;
+      } else {
+        filePost.status_code = 500;
+      }
+    } else {
+      filePost = platform.api.post(storageService + '?url=' + inputs[1], null);
+      newFilePath = filePost.content.path;
+    }
 
     if (filePost.status_code == 201) {
-      uploadResponseBuild.text = 'Your file was successfully uploaded. It is now located at ' + baseURL + filePost.content.path;
+      uploadResponseBuild.text = 'Your file was successfully uploaded. It is now located at ' + baseURL + newFilePath;
+      var indexNewItem = platform.api.get(indexMemesService + '?command=newItem&path=' + newFilePath);
+      if (indexNewItem.content.success === false) {
+        uploadResponseBuild.text = uploadResponseBuild.text + '  BUT the file was not indexed. Please let an administrator know.';
+      }
     } else {
       uploadResponseBuild.text = 'File upload unsuccessful.';
     }
