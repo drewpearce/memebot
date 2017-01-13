@@ -27,78 +27,80 @@ function selectMeme(files) {
 }
 
 function searchMemes (terms) {
-  var searchOptions = {};
-  searchOptions.parameters = {};
-  searchOptions.parameters.fields = 'path';
-  if (terms.length === 1) {
-    searchOptions.parameters.filter = "(path like '%" + terms[0] + "%')";
-  } else {
-    searchOptions.parameters.filter = '';
+    var searchOptions = {};
+    searchOptions.parameters = {};
+    searchOptions.parameters.fields = 'path';
 
-    lodash._.each(terms, function(term, index) {
-      if (index === terms.length - 1) {
-        searchOptions.parameters.filter = searchOptions.parameters.filter + "(path like '%" + term + "%')";
-      } else {
-        searchOptions.parameters.filter = searchOptions.parameters.filter + "(path like '%" + term + "%') AND ";
-      }
-    });
-  }
+    if (terms.length === 1) {
+        searchOptions.parameters.filter = "(path like '%" + terms[0] + "%')";
+    } else {
+        searchOptions.parameters.filter = '';
 
-  var searchResults = platform.api.get(dbPath, null, searchOptions);
+        lodash._.each(terms, function(term, index) {
+            if (index === terms.length - 1) {
+                searchOptions.parameters.filter = searchOptions.parameters.filter + "(path like '%" + term + "%')";
+            } else {
+                searchOptions.parameters.filter = searchOptions.parameters.filter + "(path like '%" + term + "%') AND ";
+            }
+        });
+    }
 
-  return searchResults;
+    var searchResults = platform.api.get(dbPath, null, searchOptions);
+    return searchResults;
 }
 
 function uploadFile(inputs) {
-  var uploadResponseBuild = {};
-  var filePost = {};
-  var newFilePath;
+    var uploadResponseBuild = {};
+    var filePost = {};
+    var newFilePath;
 
-  if (allowUpload !== true) {
-    uploadResponseBuild.text = 'File upload is not enabled for this instance.';
-  } else {
-    if (inputs[2]) {
-      filePost = platform.api.get(uploadMemeWithRenameService + '?url=' + inputs[1] + '&filename=' + inputs[2]);
-      newFilePath = filePost.content.post.content.path;
-      if (filePost.content.success === true) {
-        filePost.status_code = 201;
-      } else {
-        filePost.status_code = 500;
-      }
+    if (allowUpload !== true) {
+        uploadResponseBuild.text = 'File upload is not enabled for this instance.';
     } else {
-      filePost = platform.api.post(storageService + '?url=' + inputs[1], null);
-      newFilePath = filePost.content.path;
+        if (inputs[2]) {
+            filePost = platform.api.get(uploadMemeWithRenameService + '?url=' + inputs[1] + '&filename=' + inputs[2]);
+            newFilePath = filePost.content.post.content.path;
+
+            if (filePost.content.success === true) {
+                filePost.status_code = 201;
+            } else {
+                filePost.status_code = 500;
+            }
+        } else {
+            filePost = platform.api.post(storageService + '?url=' + inputs[1], null);
+            newFilePath = filePost.content.path;
+        }
+
+        if (filePost.status_code == 201) {
+            uploadResponseBuild.text = 'Your file was successfully uploaded. It is now located at ' + baseURL + newFilePath;
+            var indexNewItem = platform.api.get(indexMemesService + '?command=newItem&path=' + newFilePath);
+
+            if (indexNewItem.content.success === false) {
+                uploadResponseBuild.text = uploadResponseBuild.text + '  BUT the file was not indexed. Please let an administrator know.';
+            }
+        } else {
+            uploadResponseBuild.text = 'File upload unsuccessful.';
+        }
     }
 
-    if (filePost.status_code == 201) {
-      uploadResponseBuild.text = 'Your file was successfully uploaded. It is now located at ' + baseURL + newFilePath;
-      var indexNewItem = platform.api.get(indexMemesService + '?command=newItem&path=' + newFilePath);
-      if (indexNewItem.content.success === false) {
-        uploadResponseBuild.text = uploadResponseBuild.text + '  BUT the file was not indexed. Please let an administrator know.';
-      }
-    } else {
-      uploadResponseBuild.text = 'File upload unsuccessful.';
-    }
-  }
-
-  return uploadResponseBuild;
+    return uploadResponseBuild;
 }
 
 if (textIn[0] == 'help') {
-    response.text = 'Help text';
+    response.text = 'The following inputs are allowed.   *no input* The service will return a random file from the storage service.   *{search term(s)}* The service will return a file whose name matches all of the terms.   *upload {remote url} {destination file name or path and filename}(optional)* The service will copy the file at the remote url to the destination service. If the file name and path is specified the file will be renamed according to the input. Currently any folders in the destination path must already exist.   *help* The service will return this help text.';
 } else if (textIn[0] == 'upload') {
-  response = uploadFile(textIn);
+    response = uploadFile(textIn);
 } else {
-  var matches = searchMemes(textIn);
+    var matches = searchMemes(textIn);
 
-  if (matches.content.resource.length < 1) {
-    response.text = 'No files matched your query.';
-  } else if (matches.content.resource.length == 1) {
-    response.response_type = 'in_channel';
-    response.text = baseURL + matches.content.resource[0].path;
-  } else {
-    response = selectMeme(matches.content.resource);
-  }
+    if (matches.content.resource.length < 1) {
+        response.text = 'No files matched your query.';
+    } else if (matches.content.resource.length == 1) {
+        response.response_type = 'in_channel';
+        response.text = baseURL + matches.content.resource[0].path;
+    } else {
+        response = selectMeme(matches.content.resource);
+    }
 }
 
 return response;
