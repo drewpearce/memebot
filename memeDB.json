@@ -1,0 +1,24 @@
+{
+	"resource": [
+		{
+			"name": "memes",
+			"label": "Memes",
+			"plural": "Memes",
+			"alias": null,
+			"field": [
+				{
+					"name": "id",
+					"label": "Id",
+					"type": "id"
+				},
+				{
+					"name": "path",
+					"label": "Path",
+					"type": "string",
+					"size": 255,
+					"allow_null": false
+				}
+			]
+		}
+	]
+}

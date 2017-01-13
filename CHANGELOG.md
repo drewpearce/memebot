@@ -1,6 +1,15 @@
  Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.0]
+### Added
+- Added file uploading
+- Added help text
+
+### Changed
+- Reverted to indexing metadata via database for efficiency
+- Divided functionality into multiple files.
+
 ## [0.3.0]
 ### Added
 - Added ability to search multiple terms
