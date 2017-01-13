@@ -3,11 +3,11 @@
 $api = $platform['api'];
 $post = $api->post;
 $delete = $api->delete;
-$storageService = 's3'; //input the name of your storage service
-$tempStorageFilePath = '/var/www/api.drewpearce.tech/storage/app';
-$tempStorageBaseURL = 'https://api.drewpearce.tech';
-$tempStorageService = 'files';
-$tempStorageFolder = 'tmp';
+$storageService = ''; //input the name of your storage service
+$tempStorageFilePath = '';
+$tempStorageBaseURL = '';
+$tempStorageService = '';
+$tempStorageFolder = '';
 
 if ( $event['request']['parameters']['url'] && $event['request']['parameters']['filename'] ) {
   $destPath = $tempStorageFilePath . '/' . $tempStorageFolder . '/' . $event['request']['parameters']['filename'];
