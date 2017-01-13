@@ -84,7 +84,9 @@ function uploadFile(inputs) {
   return uploadResponseBuild;
 }
 
-if (textIn[0] == 'upload') {
+if (textIn[0] == 'help') {
+    response.text = 'Help text';
+} else if (textIn[0] == 'upload') {
   response = uploadFile(textIn);
 } else {
   var matches = searchMemes(textIn);
